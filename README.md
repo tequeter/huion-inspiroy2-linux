@@ -11,7 +11,7 @@ support](https://github.com/DIGImend/digimend-kernel-drivers/pull/679) has not
 been merged yet, so you'll need to grab my branch and setup DKMS to install it
 with every kernel update.
 
-### DKMS
+### DKMS setup on Debian/Ubuntu
 
 Required packages: TBD.
 
@@ -20,16 +20,22 @@ From the `digimend-kernel-drivers` source directory, run:
 ```bash
 debuild -us -uc
 sudo apt install ../digimend-dkms_11_all.deb
-sudo apt-mark hold digimend-dkms
+
+sudo tee /etc/apt/preferences.d/digimend-dkms <<EOF
+Package: digimend-dkms
+Pin: version 11
+Pin-Priority: 1001
+EOF
 ```
 
 Ideally you'd change the package version to indicate it's customized (`dch
 --nmu ...`). But somehow the package is broken in that case, as the `dkms.conf`
 ends up in a directory different from the driver sources.
 
-Anyway, it's necessary after that to put the package on hold, so that it's not
-overwritten the next time you `apt upgrade` (Debian ships a `11-2` version that
-would overwrite any kind of `+`ing).
+Anyway, it's necessary after that to pin the package we just built, so that
+it's not overwritten the next time you `apt upgrade` (Debian ships a `11-2`
+version that would overwrite any kind of `+`ing). Pinning integrates better
+with the other Apt tools than plain `apt-mark hold`.
 
 ## Advanced setup: wheel and group buttons
 
